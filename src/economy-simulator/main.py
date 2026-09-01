@@ -1,14 +1,12 @@
 # Import statements
-from market import Merchant, Market
+from market import Market
 
 def main():
     
-    merchants = []
+    print("How many merchants?")
+    number = int(input())
     
-    for i in range(5):
-        merchants.append(Merchant())
-    
-    market = Market(merchants)
+    market = Market(number)
     
     print("How many ticks?")
     ticks = int(input())
