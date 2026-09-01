@@ -4,14 +4,11 @@ import random
 class Merchant:
     
     #Init method
-    def __init__(self, cash=100, wheat=1, threshold=None):
-        self.cash=cash
-        self.wheat=wheat
-        # Necessary to actually generate a random value each time
-        if threshold is None:
-            self.threshold=random.randint(1,5)
-        else:
-            self.threshold=threshold
+    def __init__(self, cash=None, wheat=None, threshold=None):
+        # Random initialization of all values
+        self.cash = random.randint(1,100) if cash is None else cash
+        self.wheat = random.randint(1,5) if wheat is None else wheat
+        self.threshold = random.randint(1,70) if threshold is None else threshold
 
 
     def will_buy(self, market, item):

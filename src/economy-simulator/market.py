@@ -87,8 +87,8 @@ class Market:
         
         if demand > supply:
             self.prices["wheat"] += 1
-        # Clamp price to 0
-        elif demand < supply and self.prices["wheat"] > 0:
+        # Clamp price to 1
+        elif demand < supply and self.prices["wheat"] > 1:
             self.prices["wheat"] -= 1
     
     
