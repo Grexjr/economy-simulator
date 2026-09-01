@@ -1,56 +1,59 @@
 # Import methods
 import random
-
-class Merchant:
-    
-    #Init method
-    def __init__(self, cash=10, wheat=5):
-        self.cash=cash
-        self.wheat=wheat
-        
-    # Buy method with skip for if not enough money    
-    def buy(self, item, market):
-        if self.cash < market.prices[item]:
-            print("Merchant tried to buy wheat, not enough cash!")
-        else:
-            print("Merchant bought wheat.")
-            self.cash = self.cash - market.prices[item]
-            self.wheat += 1
-
-    # Sell method which checks if has enough wheat
-    def sell(self, item, market):
-        if self.wheat <= 0:
-            print("Merchant tried to sell wheat, not enough wheat!")
-        else:
-            print("Merchant sold wheat.")
-            self.cash = self.cash + market.prices[item]
-            self.wheat -= 1
-            
-    # Method to print merchant
-    def print_merchant(self):
-        print("Merchant:\n")
-        print(f"\t cash:{self.cash}\n")
-        print(f"\t wheat:{self.wheat}\n")
-            
-
+from merchant import Merchant
 
 class Market:  
     
     #Init method
-    def __init__(self,merchants,prices={"wheat":5}):
-        self.merchants=merchants
-        self.prices=prices
+    def __init__(self,merchant_number,prices=None):
+        # Avoid mutable default arguments
+        if prices is None:
+            prices = {"wheat":5}
+            
+        # Initialize a blank list
+        self.merchants = []
         
-    #Run tick method
+        # Populate list of merchants
+        for i in range(merchant_number):
+            self.merchants.append(Merchant())
+            
+        self.prices = prices
+        
+    def select_random_merchant(self):
+        return random.choice(self.merchants)
+        
+    def validate_transaction(self,buyer,seller,good):
+        buy = buyer.will_buy(self,good)
+        if not buy:
+            print(f"Merchant did not have enough money or {good} was too expensive!")
+            return False
+        sell = seller.will_sell()
+        if not sell:
+            print(f"Merchant did not have enough wheat to sell!")
+            return False
+        return True
+        
+    def attempt_transaction(self,good):
+        # Runs a full transaction between buyer and seller
+        # Random selects buyer and seller and enforces that they are different
+        random_buyer = self.select_random_merchant()
+        random_seller = self.select_random_merchant()
+        while random_buyer == random_seller:
+            random_seller = self.select_random_merchant()
+        # Validates the transaction between the two, if valid runs the transaction effects
+        if self.validate_transaction(random_buyer,random_seller,good):
+            self.execute_transaction(random_buyer,random_seller,good)
+            print(f"Merchant found buyer for {good} at {self.prices[good]}!")
+            
+    def execute_transaction(self,buyer,seller,good):
+        buyer.adjust_cash(-self.prices[good])
+        buyer.adjust_wheat(1)
+        seller.adjust_cash(self.prices[good])
+        seller.adjust_wheat(-1)
+
     def run_tick(self):
-        #Select a random merchant
-        random_merchant = random.choice(self.merchants)
-        #Decide if sell or buy attempt
-        random_bool = bool(random.getrandbits(1))
-        if random_bool:
-            random_merchant.buy("wheat",self)
-        else:
-            random_merchant.sell("wheat",self)
+        self.attempt_transaction("wheat")
+        self.update_price()
     
     # Print method
     def print_market(self):
@@ -58,5 +61,34 @@ class Market:
         print("Merchants:")
         for i in range (len(self.merchants)):
             self.merchants[i].print_merchant()
+            
+    # Methods to update prices
+    # Get the demand for wheat
+    def get_demand(self):
+        demand = 0
+        for i in range (len(self.merchants)):
+            threshold = self.merchants[i].threshold
+            query = self.merchants[i].cash - self.prices["wheat"]
+            if query > threshold:
+                demand += 1
+        return demand
+    
+    # Get the supply of wheat
+    def get_supply(self):
+        supply = 0
+        for i in range (len(self.merchants)):
+            supply += self.merchants[i].wheat
+        return supply
+        
+    # Updates price based on supply and demand; if supply >, price--; if demand >, price++
+    def update_price(self):
+        demand = int(self.get_demand())
+        supply = int(self.get_supply())
+        
+        if demand > supply:
+            self.prices["wheat"] += 1
+        # Clamp price to 0
+        elif demand < supply and self.prices["wheat"] > 0:
+            self.prices["wheat"] -= 1
     
     
