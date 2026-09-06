@@ -37,6 +37,9 @@ class Market:
         if sell == TransactionResult.INSUFFICIENT_GOODS:
             print(f"{seller.name} did not have enough {good} to sell!")
             return False
+        if sell == TransactionResult.NEED_GOOD:
+            print(f"{seller.name} needed to keep the {good}!")
+            return False
         # If all validation succeeds, return true
         return True
         
@@ -74,17 +77,20 @@ class Market:
     def get_demand(self):
         demand = 0
         for i in range (len(self.merchants)):
-            threshold = self.merchants[i].threshold
+            cash_threshold = self.merchants[i].cash_threshold
             query = self.merchants[i].cash - self.prices["wheat"]
-            if query > threshold:
+            if query > cash_threshold:
                 demand += 1
         return demand
     
-    # Get the supply of wheat
+    # Get the supply of wheat - adjusted by who has enough to sell (not going below their threshold)
     def get_supply(self):
         supply = 0
         for i in range (len(self.merchants)):
-            supply += self.merchants[i].wheat
+            wheat_threshold = self.merchants[i].wheat_threshold
+            query = self.merchants[i].wheat - 1
+            if query > wheat_threshold:
+                supply += 1
         return supply
         
     # Updates price based on supply and demand; if supply >, price--; if demand >, price++

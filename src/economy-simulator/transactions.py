@@ -5,3 +5,4 @@ class TransactionResult(Enum):
     INSUFFICIENT_FUNDS = 2
     TOO_EXPENSIVE = 3
     INSUFFICIENT_GOODS = 4
+    NEED_GOOD = 5
