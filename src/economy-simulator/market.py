@@ -1,6 +1,7 @@
 # Import methods
 import random
 from merchant import Merchant
+from transactions import TransactionResult
 
 class Market:  
     
@@ -15,7 +16,7 @@ class Market:
         
         # Populate list of merchants
         for i in range(merchant_number):
-            self.merchants.append(Merchant(i))
+            self.merchants.append(Merchant(i+1))
             
         self.prices = prices
         
@@ -23,14 +24,20 @@ class Market:
         return random.choice(self.merchants)
         
     def validate_transaction(self,buyer,seller,good):
+        # Buyer validation
         buy = buyer.will_buy(self,good)
-        if not buy:
-            print(f"{buyer.name} did not have enough money or {good} was too expensive!")
+        if buy == TransactionResult.INSUFFICIENT_FUNDS:
+            print(f"{buyer.name} did not have enough money to buy {good}!")
             return False
+        if buy == TransactionResult.TOO_EXPENSIVE:
+            print(f"{buyer.name} felt {good} was too expensive!")
+            return False
+        # Seller validation
         sell = seller.will_sell()
-        if not sell:
-            print(f"{seller.name} did not have enough wheat to sell!")
+        if sell == TransactionResult.INSUFFICIENT_GOODS:
+            print(f"{seller.name} did not have enough {good} to sell!")
             return False
+        # If all validation succeeds, return true
         return True
         
     def attempt_transaction(self,good):
@@ -90,5 +97,5 @@ class Market:
         # Clamp price to 1
         elif demand < supply and self.prices["wheat"] > 1:
             self.prices["wheat"] -= 1
-    
-    
+
+

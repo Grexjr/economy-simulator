@@ -1,5 +1,6 @@
 # Import modules
 import random
+from transactions import TransactionResult
 
 class Merchant:
     
@@ -16,18 +17,18 @@ class Merchant:
         # Validates if will buy
         # If cash is zero or less, do not buy
         if self.cash <= 0:
-            return False
+            return TransactionResult.INSUFFICIENT_FUNDS
         # If item is too expensive, do not buy
         if self.cash - market.prices[item] < self.threshold:
-            return False
-        return True
+            return TransactionResult.TOO_EXPENSIVE
+        return TransactionResult.SUCCESS
 
     def will_sell(self):
         # Validates if will sell
         # If wares are zero, do not sell
         if self.wheat <= 0:
-            return False
-        return True
+            return TransactionResult.INSUFFICIENT_GOODS
+        return TransactionResult.SUCCESS
 
     # TODO: will need to make this generic to all goods, but for now just wheat
     def adjust_wheat(self, adjust):
