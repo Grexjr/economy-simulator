@@ -15,7 +15,7 @@ class Market:
         
         # Populate list of merchants
         for i in range(merchant_number):
-            self.merchants.append(Merchant())
+            self.merchants.append(Merchant(i))
             
         self.prices = prices
         
@@ -25,11 +25,11 @@ class Market:
     def validate_transaction(self,buyer,seller,good):
         buy = buyer.will_buy(self,good)
         if not buy:
-            print(f"Merchant did not have enough money or {good} was too expensive!")
+            print(f"{buyer.name} did not have enough money or {good} was too expensive!")
             return False
         sell = seller.will_sell()
         if not sell:
-            print(f"Merchant did not have enough wheat to sell!")
+            print(f"{seller.name} did not have enough wheat to sell!")
             return False
         return True
         
@@ -43,7 +43,7 @@ class Market:
         # Validates the transaction between the two, if valid runs the transaction effects
         if self.validate_transaction(random_buyer,random_seller,good):
             self.execute_transaction(random_buyer,random_seller,good)
-            print(f"Merchant found buyer for {good} at {self.prices[good]}!")
+            print(f"{random_seller.name} found {random_buyer.name} for {good} at {self.prices[good]}!")
             
     def execute_transaction(self,buyer,seller,good):
         buyer.adjust_cash(-self.prices[good])

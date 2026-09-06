@@ -3,9 +3,10 @@ import random
 
 class Merchant:
     
-    #Init method
-    def __init__(self, cash=None, wheat=None, threshold=None):
+    #Number is determined by sequence in which the merchant is added
+    def __init__(self, number,cash=None, wheat=None, threshold=None):
         # Random initialization of all values
+        self.name = "Merchant" + str(number)
         self.cash = random.randint(1,100) if cash is None else cash
         self.wheat = random.randint(1,5) if wheat is None else wheat
         self.threshold = random.randint(1,70) if threshold is None else threshold
@@ -39,7 +40,7 @@ class Merchant:
             
     # Method to print merchant
     def print_merchant(self):
-        print("Merchant:\n")
+        print(f"{self.name}\n")
         print(f"\t cash:{self.cash}\n")
         print(f"\t wheat:{self.wheat}\n")  
         print(f"\t threshold:{self.threshold}\n")
