@@ -58,8 +58,8 @@ class Merchant:
         if wants_to_sell:
             return MerchantStatus.SELLER
         else:
-            return MerchantStatus.NEITHER
-
+            return MerchantStatus.HOLDER
+            
     def resolve_tie(self,market,good):
         # Does not need to adjudicate negative resources/desperation on cash or wheat because guaranteed to not buy or sell if cash is low or wheat is low, respectively
         # Instead, just calculates margins and which is greater; however, cannot just do raw numbers b/c always more cash than wheat, so need proportions

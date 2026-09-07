@@ -40,33 +40,11 @@ class Market:
 
         # Then update the price after all transactions of the tick have been done
         self.update_price()
-        
-    def validate_transaction(self,buyer,seller,good):
-        # Buyer validation
-        buy = buyer.will_buy(self,good)
-        if buy == TransactionResult.INSUFFICIENT_FUNDS:
-            print(f"{buyer.name} did not have enough money to buy {good}!")
-            return False
-        if buy == TransactionResult.TOO_EXPENSIVE:
-            print(f"{buyer.name} felt {good} was too expensive!")
-            return False
-        # Seller validation
-        sell = seller.will_sell()
-        if sell == TransactionResult.INSUFFICIENT_GOODS:
-            print(f"{seller.name} did not have enough {good} to sell!")
-            return False
-        if sell == TransactionResult.NEED_GOOD:
-            print(f"{seller.name} needed to keep the {good}!")
-            return False
-        # If all validation succeeds, return true
-        return True
-        
+                 
     # This is the method that is run every tick
     def attempt_transaction(self,good,buyer,seller):
-        # Validates the transaction between the two, if valid runs the transaction effects
-        if self.validate_transaction(buyer,seller,good):
-            self.execute_transaction(buyer,seller,good)
-            print(f"{random_seller.name} found {random_buyer.name} for {good} at {self.prices[good]}!")
+         self.execute_transaction(buyer,seller,good)
+         print(f"{seller.name} found {buyer.name} for {good} at {self.prices[good]}!")
             
     def execute_transaction(self,buyer,seller,good):
         buyer.adjust_cash(-self.prices[good])
