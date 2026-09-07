@@ -1,7 +1,7 @@
 # Import methods
 import random
 from merchant import Merchant
-from transactions import TransactionResult
+from enums import TransactionResult, MerchantStatus
 
 class Market:  
     
@@ -11,17 +11,35 @@ class Market:
         if prices is None:
             prices = {"wheat":5}
             
-        # Initialize a blank list
+        # Initialize a blank list of all merchants, buyers, sellers
         self.merchants = []
+        self.buyers = []
+        self.sellers = []
         
         # Populate list of merchants
         for i in range(merchant_number):
             self.merchants.append(Merchant(i+1))
             
         self.prices = prices
-        
-    def select_random_merchant(self):
-        return random.choice(self.merchants)
+       
+    def run_tick(self):
+        for merchant in self.merchants: 
+            result = merchant.is_merchant_buyer_or_seller(self,"wheat")
+            if result == MerchantStatus.BUYER:
+                self.buyers.append(merchant)
+            if result == MerchantStatus.SELLER:
+                self.sellers.append(merchant)
+
+        # shuffle lists to prevent early merchant number bias
+        random.shuffle(self.buyers)
+        random.shuffle(self.sellers)
+
+        # Iterate through while both are not empty and pair them up
+        while len(self.buyers) != 0 and len(self.sellers) != 0:
+            self.attempt_transaction("wheat",self.buyers.pop(),self.sellers.pop())
+
+        # Then update the price after all transactions of the tick have been done
+        self.update_price()
         
     def validate_transaction(self,buyer,seller,good):
         # Buyer validation
@@ -43,27 +61,18 @@ class Market:
         # If all validation succeeds, return true
         return True
         
-    def attempt_transaction(self,good):
-        # Runs a full transaction between buyer and seller
-        # Random selects buyer and seller and enforces that they are different
-        random_buyer = self.select_random_merchant()
-        random_seller = self.select_random_merchant()
-        while random_buyer == random_seller:
-            random_seller = self.select_random_merchant()
+    # This is the method that is run every tick
+    def attempt_transaction(self,good,buyer,seller):
         # Validates the transaction between the two, if valid runs the transaction effects
-        if self.validate_transaction(random_buyer,random_seller,good):
-            self.execute_transaction(random_buyer,random_seller,good)
+        if self.validate_transaction(buyer,seller,good):
+            self.execute_transaction(buyer,seller,good)
             print(f"{random_seller.name} found {random_buyer.name} for {good} at {self.prices[good]}!")
             
     def execute_transaction(self,buyer,seller,good):
         buyer.adjust_cash(-self.prices[good])
         buyer.adjust_wheat(1)
         seller.adjust_cash(self.prices[good])
-        seller.adjust_wheat(-1)
-
-    def run_tick(self):
-        self.attempt_transaction("wheat")
-        self.update_price()
+        seller.adjust_wheat(-1) 
     
     # Print method
     def print_market(self):

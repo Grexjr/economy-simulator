@@ -1,6 +1,6 @@
 # Import modules
 import random
-from transactions import TransactionResult
+from enums import TransactionResult, MerchantStatus
 
 class Merchant:
     
