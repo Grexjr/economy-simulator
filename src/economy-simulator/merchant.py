@@ -52,12 +52,17 @@ class Merchant:
 
         if wants_to_buy and wants_to_sell:
             # Both true, so need a tiebreaker
+            # DEBUG
+            #print("MERCHANT TIE!")
             return self.resolve_tie(market,good)
         if wants_to_buy:
+            #print("MERCHANT IS BUYER")
             return MerchantStatus.BUYER
         if wants_to_sell:
+            #print("MERCHANT IS SELLER")
             return MerchantStatus.SELLER
         else:
+            #print("MERCHANT IS HOLDER")
             return MerchantStatus.HOLDER
             
     def resolve_tie(self,market,good):

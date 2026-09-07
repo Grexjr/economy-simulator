@@ -23,12 +23,19 @@ class Market:
         self.prices = prices
        
     def run_tick(self):
+        # Clear buyers and sellers
+        self.buyers = []
+        self.sellers = []
+
         for merchant in self.merchants: 
             result = merchant.is_merchant_buyer_or_seller(self,"wheat")
             if result == MerchantStatus.BUYER:
                 self.buyers.append(merchant)
             if result == MerchantStatus.SELLER:
                 self.sellers.append(merchant)
+        # DEBUG
+        #print(f"Buyers: {len(self.buyers)}")
+        #print(f"Sellers: {len(self.sellers)}")
 
         # shuffle lists to prevent early merchant number bias
         random.shuffle(self.buyers)
